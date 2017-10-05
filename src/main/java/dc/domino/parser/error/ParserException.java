@@ -1,6 +1,6 @@
-package dc.domino.error;
+package dc.domino.parser.error;
 
-public class ParserException extends Exception {
+public class ParserException extends RuntimeException {
 
     public ParserException(String message) {
         super(message);
