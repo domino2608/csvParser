@@ -31,10 +31,10 @@ public class CSVParser {
      * @return parsed records from file
      */
     public List<CSVRecord> parseFile() throws IOException {
-        List<String> lines = Files.readAllLines(file.toPath()); //TODO one time read of file?
+        List<String> lines = Files.readAllLines(file.toPath());
         List<CSVRecord> parsedRecords = new ArrayList<>();
 
-        headerMap = parseHeaders(lines.get(0)); //TODO one time read
+        headerMap = parseHeaders(lines.get(0));
 
         for (int i = 1; i < lines.size(); i++) {
             try {
@@ -47,7 +47,7 @@ public class CSVParser {
         return parsedRecords;
     }
 
-    public <T> List<T> parseFile(Class<T> toClass) throws IOException, ReflectiveOperationException { //TODO proper exception handling
+    public <T> List<T> parseFile(Class<T> toClass) throws IOException {
         List<CSVRecord> csvRecords = parseFile();
         List<T> parsedRecords = new ArrayList<>();
 

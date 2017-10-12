@@ -1,5 +1,6 @@
 package dc.domino.parser;
 
+import dc.domino.parser.error.ParserException;
 import dc.domino.parser.fieldparsers.FieldParser;
 import dc.domino.parser.util.ReflectionHelper;
 
@@ -29,18 +30,25 @@ public class CSVRecord {
 //        return parsedObjects;
 //    }
 
-    public <T> T parseToObject(Class<T> clazz) throws ReflectiveOperationException {
+    public <T> T parseToObject(Class<T> clazz) {
 
         List<Field> csvFields = ReflectionHelper.getCsvAnnotatedFields(clazz);
-        T obj = ReflectionHelper.newInstance(clazz);
+        T obj = null;
+        try { //TODO #1 think of such exception handling
+            obj = ReflectionHelper.newInstance(clazz);
 
-        for (Field f : csvFields) {
-            FieldParser fieldParser = ReflectionHelper.getCSVFieldParserInstanceForField(f);
-            Object value = fieldParser.parse(recordValues[getIndexForField(f)]);
+            for (Field f : csvFields) {
+                FieldParser fieldParser = ReflectionHelper.getCSVFieldParserInstanceForField(f);
+                Object value = fieldParser.parse(recordValues[getIndexForField(f)]);
 
-            if (!ReflectionHelper.setValueBySetterMethod(obj, f, value)) {
-                ReflectionHelper.setFieldValueDirectly(obj, f, value);
+                if (!ReflectionHelper.setValueBySetterMethod(obj, f, value)) {
+                    ReflectionHelper.setFieldValueDirectly(obj, f, value);
+                }
             }
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace(); //TODO logger
+
+            throw new ParserException(e);
         }
 
         return obj;

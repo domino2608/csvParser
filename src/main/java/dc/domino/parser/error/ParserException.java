@@ -6,7 +6,11 @@ public class ParserException extends RuntimeException {
         super(message);
     }
 
-    public ParserException(String message,Throwable cause) {
+    public ParserException(Throwable cause) {
+        super(cause);
+    }
+
+    public ParserException(String message, Throwable cause) {
         super(message, cause);
     }
 }
