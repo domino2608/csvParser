@@ -5,7 +5,7 @@ import dc.domino.parser.error.ParserException;
 public class IntegerFieldParser implements FieldParser<Integer> {
     @Override
     public Integer parse(String toParse) {
-        Integer result = null;
+        Integer result;
 
         try {
             result = Integer.parseInt(toParse);
