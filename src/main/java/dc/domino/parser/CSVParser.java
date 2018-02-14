@@ -51,7 +51,7 @@ public class CSVParser {
         List<CSVRecord> csvRecords = parseFile();
         List<T> parsedRecords = new ArrayList<>();
 
-        for (CSVRecord record: csvRecords) {
+        for (CSVRecord record : csvRecords) {
             parsedRecords.add(record.parseToObject(toClass));
         }
 
