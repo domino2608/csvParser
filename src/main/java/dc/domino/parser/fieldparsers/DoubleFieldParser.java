@@ -5,7 +5,7 @@ import dc.domino.parser.error.ParserException;
 public class DoubleFieldParser implements FieldParser<Double> {
     @Override
     public Double parse(String toParse) {
-        Double result;
+        Double result = null;
 
         try {
             result = Double.parseDouble(toParse);
