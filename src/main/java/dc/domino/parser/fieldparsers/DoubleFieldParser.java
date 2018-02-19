@@ -10,7 +10,7 @@ public class DoubleFieldParser implements FieldParser<Double> {
         try {
             result = Double.parseDouble(toParse);
         } catch (NumberFormatException e) {
-            throw new ParserException("Wrong input! Expected integer and got: " + toParse);
+            throw new ParserException("Wrong input! Expected double and got: " + toParse);
         }
 
         return result;
