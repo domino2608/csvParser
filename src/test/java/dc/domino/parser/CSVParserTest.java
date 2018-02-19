@@ -26,6 +26,10 @@ public class CSVParserTest {
             "1,Janek,Kowalski\n" +
             "2,Maciej,Krystianowicz";
 
+    private static final String FILE_TEXT_ERROR = "id,name,surname\n" +
+            "1,Janek\n" +
+            "2,Maciej,Krystianowicz";
+
     private static final Map<String, Integer> headers = new HashMap<>();
 
     private static final List<CSVRecord> EXPECTED_CSV_RECORDS = new ArrayList<>();
@@ -67,6 +71,26 @@ public class CSVParserTest {
         List<ParseToObjectTestClass> parsedRecords = new CSVParser(tmpFile).parseFile(ParseToObjectTestClass.class);
 
         assertEquals(EXPECTED_OBJECTS, parsedRecords);
+    }
+
+    @Test
+    public void testParseString() {
+        List<CSVRecord> parsedRecords = new CSVParser().parseString(FILE_TEXT);
+
+        assertEquals(EXPECTED_CSV_RECORDS, parsedRecords);
+    }
+
+    @Test(expected = IOException.class)
+    public void shouldThrowIOExceptionOnFileParse() throws IOException {
+        new CSVParser(new File("")).parseFile();
+    }
+
+    @Test(expected = ParserException.class)
+    public void testParserExceptionOnWrongFileStructure() throws IOException {
+        File errorFile = File.createTempFile("err", ".tmp");
+        Files.write(errorFile.toPath(), FILE_TEXT_ERROR.getBytes());
+
+        new CSVParser(errorFile).parseFile();
     }
 
     public static class ParseToObjectTestClass {

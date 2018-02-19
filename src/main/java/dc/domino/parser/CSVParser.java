@@ -5,7 +5,9 @@ import dc.domino.parser.error.ParserException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,12 +17,20 @@ public class CSVParser {
     //TODO more delims
     private static final String COMMA_DELIM = ",";
 
-    private Map<String, Integer> headerMap = new HashMap<>(); //TODO change it - maybe constructor?
-
     private File file;
 
     private int columnNumber;
 
+    /**
+     * Creates new CSVParser with empty file - for example to parse strings.
+     */
+    public CSVParser() {
+    }
+
+    /**
+     * Creates new CSVParser with file to parse from.
+     * @param file
+     */
     public CSVParser(File file) {
         this.file = file;
     }
@@ -31,14 +41,28 @@ public class CSVParser {
      * @return parsed records from file
      */
     public List<CSVRecord> parseFile() throws IOException {
-        List<String> lines = Files.readAllLines(file.toPath());
+        String fileContent = new String(Files.readAllBytes(file.toPath()));
+        List<CSVRecord> parsedRecords = parseString(fileContent);
+
+        return parsedRecords;
+    }
+
+    public <T> List<T> parseFile(Class<T> toClass) throws IOException {
+        String fileContent = new String(Files.readAllBytes(file.toPath()));
+        List<T> parsedRecords = parseString(fileContent, toClass);
+
+        return parsedRecords;
+    }
+
+    public List<CSVRecord> parseString(String stringToParse) {
+        List<String> lines = Arrays.asList(stringToParse.split("\n"));
         List<CSVRecord> parsedRecords = new ArrayList<>();
 
-        headerMap = parseHeaders(lines.get(0));
+        Map<String, Integer> headerMap = parseHeaders(lines.get(0));
 
         for (int i = 1; i < lines.size(); i++) {
             try {
-                parsedRecords.add(parseRecord(lines.get(i)));
+                parsedRecords.add(parseRecord(headerMap, lines.get(i)));
             } catch (ParserException e) {
                 throw new ParserException(e.getMessage() + "\nOn line: " + (i + 1), e);
             }
@@ -47,8 +71,8 @@ public class CSVParser {
         return parsedRecords;
     }
 
-    public <T> List<T> parseFile(Class<T> toClass) throws IOException {
-        List<CSVRecord> csvRecords = parseFile();
+    public <T> List<T> parseString(String stringToParse, Class<T> toClass) {
+        List<CSVRecord> csvRecords = parseString(stringToParse);
         List<T> parsedRecords = new ArrayList<>();
 
         for (CSVRecord record : csvRecords) {
@@ -58,8 +82,7 @@ public class CSVParser {
         return parsedRecords;
     }
 
-    //TODO make it mutable and able to parse more records from one string
-    private CSVRecord parseRecord(String recordString) throws ParserException {
+    private CSVRecord parseRecord(Map<String, Integer> headerMap, String recordString) throws ParserException {
         return new CSVRecord(headerMap, parseRecordLine(recordString));
     }
 
@@ -86,4 +109,7 @@ public class CSVParser {
         return recordLine.split(COMMA_DELIM);
     }
 
+    public void setFile(File file) {
+        this.file = file;
+    }
 }
